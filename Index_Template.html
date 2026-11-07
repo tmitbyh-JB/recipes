@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site Title</title>
+  <meta name="description" content="Short description of the site for search results and link previews.">
+  <style>
+
+    /* ── Reset & Base ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Same palette as the recipe template */
+      --accent:      #2E5F3A;
+      --accent-dark: #1F4228;
+      --accent-soft: #E3ECE1;
+      --light-bg:    #F5F7F4;
+      --border:      #BFCFBA;
+      --body:        #222222;
+      --muted:       #666666;
+      --card:        #FFFFFF;
+      --page-max:    1120px;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans:  Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      font-size: 15px;
+      color: var(--body);
+      background: var(--light-bg);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      max-width: var(--page-max);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Top bar ──────────────────────────────────────────── */
+    .topbar {
+      background: #fff;
+      border-bottom: 2px solid var(--accent);
+    }
+    .topbar .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .brand {
+      font-family: var(--serif);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+    }
+    .topbar nav a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      margin-left: 22px;
+      letter-spacing: 0.04em;
+    }
+    .topbar nav a:hover { color: var(--accent); }
+
+    /* ── Hero ─────────────────────────────────────────────── */
+    .hero {
+      background:
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,0.08) 0 120px, transparent 121px),
+        radial-gradient(circle at 92% 90%, rgba(255,255,255,0.05) 0 180px, transparent 181px),
+        var(--accent);
+      color: #fff;
+      padding: 56px 0 64px;
+    }
+    .hero .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+      font-weight: 700;
+      max-width: 640px;
+      margin-bottom: 14px;
+    }
+    .hero p {
+      font-size: 16px;
+      max-width: 560px;
+      opacity: 0.88;
+    }
+
+    /* ── Search + filters (overlaps hero) ─────────────────── */
+    .controls {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(31, 66, 40, 0.10);
+      padding: 18px 20px;
+      margin-top: -32px;
+      position: relative;
+    }
+    .search-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .search {
+      flex: 1 1 260px;
+      position: relative;
+    }
+    .search svg {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      stroke: var(--muted);
+    }
+    .search input, .sort select {
+      width: 100%;
+      font: inherit;
+      color: var(--body);
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+    .search input { padding-left: 36px; }
+    .search input:focus, .sort select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+    .sort { flex: 0 0 170px; }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .chip {
+      font: inherit;
+      font-size: 13px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--body);
+      border-radius: 999px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .chip:hover { border-color: var(--accent); }
+    .chip[aria-pressed="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .chip .count { opacity: 0.6; margin-left: 4px; }
+
+    /* ── Results header ───────────────────────────────────── */
+    .results-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 36px 0 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .results-head h2 {
+      font-size: 0.78em;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .results-head span { font-size: 13px; color: var(--muted); }
+
+    /* ── Recipe grid ──────────────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 22px;
+      margin-bottom: 56px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover, .card:focus-visible {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px rgba(31, 66, 40, 0.13);
+      outline: none;
+    }
+    .thumb {
+      aspect-ratio: 4 / 3;
+      background: var(--accent-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .35s ease;
+    }
+    .card:hover .thumb img { transform: scale(1.04); }
+    /* Shown when a recipe has no photo yet */
+    .thumb .placeholder {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif);
+      font-size: 54px;
+      color: var(--accent);
+      opacity: 0.35;
+    }
+    .badge {
+      position: absolute;
+      top: 10px; left: 10px;
+      background: rgba(255,255,255,0.94);
+      color: var(--accent-dark);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 4px;
+    }
+    .card-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .card h3 {
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.3;
+      color: var(--body);
+    }
+    .card p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .card .meta {
+      margin-top: auto;
+      padding-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 14px;
+      border-top: 1px solid var(--accent-soft);
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    footer {
+      background: #fff;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      padding: 20px 0;
+    }
+    footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+    /* ── Small screens ────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .wrap { padding: 0 16px; }
+      .topbar nav { display: none; }
+      .hero { padding: 40px 0 56px; }
+      .sort { flex: 1 1 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── Top bar: site name (links home) + nav ──────────────── -->
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="index.html">Site Title</a>
+      <nav>
+        <a href="#recipes">Recipes</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── Hero: edit the three lines of text below ──────────── -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Short Tagline</div>
+      <h1>Main Headline</h1>
+      <p>One or two sentences describing the collection.</p>
+    </div>
+  </section>
+
+  <!-- ── Search, filters & recipe grid (built from the list in the script below) -->
+  <main class="wrap" id="recipes">
+
+    <div class="controls">
+      <div class="search-row">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" type="search" placeholder="Search recipes or ingredients…" aria-label="Search recipes">
+        </label>
+        <div class="sort">
+          <select id="sort" aria-label="Sort recipes">
+            <option value="new">Newest first</option>
+            <option value="az">A – Z</option>
+            <option value="time">Quickest first</option>
+          </select>
+        </div>
+      </div>
+      <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+    </div>
+
+    <div class="results-head">
+      <h2 id="results-title">All Recipes</h2>
+      <span id="results-count"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer id="about">
+    <div class="wrap">
+      <span>Footer text</span>
+      <span id="year"></span>
+    </div>
+  </footer>
+
+  <script>
+  /* ════════════════════════════════════════════════════════════
+     ADD A RECIPE: copy one { … } block, paste it in the list,
+     and edit the values. That's the only place you need to touch.
+
+       url     → path to the recipe page (from your template)
+       image   → path to the photo; leave "" to show a placeholder
+       category→ any name; filter buttons are built automatically
+       minutes → total time, used for "Quickest first"
+       added   → YYYY-MM-DD, used for "Newest first"
+       tags    → extra search words (key ingredients, etc.)
+     ════════════════════════════════════════════════════════════ */
+  const RECIPES = [
+    {
+      title: "Recipe Title",
+      url: "recipes/recipe-file-name.html",
+      image: "images/recipe-file-name.jpg",   // or "" for no photo
+      category: "Category",
+      blurb: "One-line description shown on the card.",
+      time: "1 hr 15 min",
+      minutes: 75,
+      yield: "4 servings",
+      added: "2026-01-01",
+      tags: ["main ingredient", "method", "occasion"]
+    },
+    // ← paste the next recipe here (keep the comma between entries)
+  ];
+
+  /* ── Rendering (no need to edit below) ───────────────────── */
+  const grid  = document.getElementById("grid");
+  const chips = document.getElementById("chips");
+  const q     = document.getElementById("q");
+  const sort  = document.getElementById("sort");
+  let active  = "All";
+
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+    ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+
+  function buildChips() {
+    const counts = RECIPES.reduce((m, r) => (m[r.category] = (m[r.category] || 0) + 1, m), {});
+    const cats = ["All", ...Object.keys(counts).sort()];
+    chips.innerHTML = cats.map(c => `
+      <button class="chip" data-cat="${esc(c)}" aria-pressed="${c === active}">
+        ${esc(c)}<span class="count">${c === "All" ? RECIPES.length : counts[c]}</span>
+      </button>`).join("");
+  }
+
+  function card(r) {
+    const thumb = r.image
+      ? `<img src="${esc(r.image)}" alt="${esc(r.title)}" loading="lazy">`
+      : `<div class="placeholder">${esc(r.title.charAt(0))}</div>`;
+    return `
+      <a class="card" href="${esc(r.url)}">
+        <div class="thumb">${thumb}<span class="badge">${esc(r.category)}</span></div>
+        <div class="card-body">
+          <h3>${esc(r.title)}</h3>
+          ${r.blurb ? `<p>${esc(r.blurb)}</p>` : ""}
+          <div class="meta">
+            ${r.time  ? `<span>⏱ ${esc(r.time)}</span>`  : ""}
+            ${r.yield ? `<span>${esc(r.yield)}</span>` : ""}
+          </div>
+        </div>
+      </a>`;
+  }
+
+  function render() {
+    const term = q.value.trim().toLowerCase();
+    let list = RECIPES.filter(r =>
+      (active === "All" || r.category === active) &&
+      (!term || [r.title, r.blurb, r.category, ...(r.tags || [])]
+                  .join(" ").toLowerCase().includes(term))
+    );
+
+    const by = {
+      new:  (a, b) => (b.added || "").localeCompare(a.added || ""),
+      az:   (a, b) => a.title.localeCompare(b.title),
+      time: (a, b) => (a.minutes ?? 1e9) - (b.minutes ?? 1e9)
+    }[sort.value];
+    list.sort(by);
+
+    grid.innerHTML = list.length
+      ? list.map(card).join("")
+      : `<div class="empty">No recipes match that search.</div>`;
+
+    document.getElementById("results-title").textContent =
+      active === "All" ? "All Recipes" : active;
+    document.getElementById("results-count").textContent =
+      `${list.length} recipe${list.length === 1 ? "" : "s"}`;
+  }
+
+  chips.addEventListener("click", e => {
+    const b = e.target.closest(".chip");
+    if (!b) return;
+    active = b.dataset.cat;
+    chips.querySelectorAll(".chip").forEach(c =>
+      c.setAttribute("aria-pressed", c.dataset.cat === active));
+    render();
+  });
+  q.addEventListener("input", render);
+  sort.addEventListener("change", render);
+
+  document.getElementById("year").textContent = "© " + new Date().getFullYear();
+  buildChips();
+  render();
+  </script>
+</body>
+</html>
