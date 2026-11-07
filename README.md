@@ -2,7 +2,7 @@
 
 A personal collection of tested, home-cooked recipes.
 
-**Live site:** https://yourusername.github.io/recipes/
+**Live site:** https://tmitbyh-JB.github.io/recipes/
 
 ## Structure
 - `index.html` — landing page (recipe list is in the `RECIPES` array near the bottom)
